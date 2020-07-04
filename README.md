@@ -1,3 +1,1 @@
-# ReHeart
-
 # Cardio-Helper
