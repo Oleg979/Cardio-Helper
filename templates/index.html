@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>ReHeart</title>
+<meta charset="utf-8">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+	<style>
+	body {
+	background-image: url('/static/heart.png')
+}
+
+.main {
+	margin: 0 auto;
+	width: 90%;
+	background-color: #CCC;
+	opacity: 0.7
+}
+
+.tablitchka {
+	margin: 30px auto;
+	width: 100%
+}
+
+.d {
+	width: 45%;
+	display: inline-block;
+	padding-right: 10px
+}
+
+.tablitchka {
+	box-shadow: 0 0 25px;
+	border-radius: 15px;
+	font-size: 20px;
+	color: #000;
+}
+
+.tablitchka th {
+	border: 3px solid #550000;
+	width: 50%;
+	background-color: #FFF;
+	border-radius: 15px
+}
+
+.tablitchka th input[type="text"] {
+	width: 45%;
+	border: 1px solid #fff
+}
+
+.tablitchka th select {
+	width: 45%;
+	border: 1px solid #fff
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">ReHeart</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+	<div class="main">
+		<form method="post">
+			<form method="post">
+			<table class="tablitchka">
+			<tr>
+				<th> <input type="text" name="age" id="age" class="inp" /><div class="d">Возраст</div> </th>
+				<th> <select name ="pol" size="0" id="sex">
+				<optgroup label ="Пол"> <option value = "1">Мужской</option><option value = "0">Женский</option>
+				</select><div class="d">Пол</div> </th>
+			</tr>
+			<tr>
+				<th> <input type="text" name="davlenie" id="pressure" class="inp" /><div class="d">Давление</div> </th>
+				<th> <select id="painType" name ="pol" size="0">
+				<optgroup label ="Тип"> <option value = "1">Тип 1</option><option value = "0">Тип 2</option>
+				</select><div class="d">Тип боли</div> </th>
+			</tr>
+			<tr>
+				<th> <input type="text" name="holetirin" class="inp" id="chol" /><div class="d">Холестерин</div> </th>
+				<th> <input type="text" name="Sahar" class="inp" id="sugar" /><div class="d">Сахар в крови</div> </th>
+			</tr>
+			<tr>
+				<th colspan="2"> <input type="text" id="freequency" name="HeartRat" class="inp"/><div class="d">Максимальная частота сердечных сокращений</div> </th>
+			</tr>
+			</table>
+			<button type="button" class="btn btn-dark" id="send" style="margin: 0 auto;
+    display: block;">Предсказать вероятность ССЗ</button>
+		</form>
+		<div class="alert alert-primary" role="alert" id="submit" style="text-align: center;     font-size: xxx-large;
+    font-weight: bolder;">
+  			Здесь будет ваш результат!
+		</div>
+	</div>
+<script>
+	document.getElementById("send").onclick = (event) => {
+		event.preventDefault();
+        fetch("http://localhost:5000/predict", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify({ data: gatherData()})
+        })
+        .then(res => res.json())
+        .then(function(res) {
+            console.log(res)
+            document.getElementById("submit").innerHTML = "Ваш результат: " + ((+res.result * 100).toFixed(2)) + "%"
+        })
+        .catch(function(res) {
+                console.log(res)
+                document.getElementById("submit").innerHTML = "Произошла ошибка";
+            })
+        }
+
+        function gatherData() {
+			age = document.getElementById('age').value;
+			sex = document.getElementById('sex').value;
+			pain = document.getElementById('painType').value;
+			pressure = document.getElementById('pressure').value;
+			chol = document.getElementById('chol').value;
+			sugar = document.getElementById('sugar').value;
+			freequency = document.getElementById('freequency').value;
+			let params = [age, sex, pain,pressure,chol,sugar,freequency];
+			return params.map(p => +p);
+	}
+</script>
+</body>
+</html>
